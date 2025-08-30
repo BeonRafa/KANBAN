@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Tabela Editável</title>
+  <title>Tabela Editável com Salvamento Local</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -23,6 +23,9 @@
     th {
       background-color: #eee;
     }
+    button {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -37,21 +40,76 @@
         <th>Cidade</th>
       </tr>
     </thead>
-    <tbody>
-      <tr>
-        <td contenteditable="true">João</td>
-        <td contenteditable="true">28</td>
-        <td contenteditable="true">São Paulo</td>
-      </tr>
-      <tr>
-        <td contenteditable="true">Maria</td>
-        <td contenteditable="true">34</td>
-        <td contenteditable="true">Belo Horizonte</td>
-      </tr>
+    <tbody id="corpoTabela">
+      <!-- Linhas serão preenchidas via JavaScript -->
     </tbody>
   </table>
 
-  <p><em>* Clique em uma célula para editar.</em></p>
+  <button onclick="adicionarLinha()">Adicionar Linha</button>
+
+  <p><em>* Edite qualquer célula. As alterações são salvas automaticamente.</em></p>
+
+  <script>
+    const tabela = document.getElementById("tabela");
+    const corpoTabela = document.getElementById("corpoTabela");
+
+    // Dados iniciais (se não houver nada salvo)
+    const dadosIniciais = [
+      ["João", "28", "São Paulo"],
+      ["Maria", "34", "Belo Horizonte"]
+    ];
+
+    // Carregar dados do localStorage ou usar padrão
+    function carregarTabela() {
+      const dadosSalvos = localStorage.getItem("tabelaDados");
+      const dados = dadosSalvos ? JSON.parse(dadosSalvos) : dadosIniciais;
+
+      corpoTabela.innerHTML = "";
+
+      dados.forEach((linha, i) => {
+        const tr = document.createElement("tr");
+
+        linha.forEach((valor, j) => {
+          const td = document.createElement("td");
+          td.contentEditable = "true";
+          td.innerText = valor;
+
+          td.addEventListener("input", salvarTabela);
+          tr.appendChild(td);
+        });
+
+        corpoTabela.appendChild(tr);
+      });
+    }
+
+    // Salvar dados no localStorage
+    function salvarTabela() {
+      const linhas = [...corpoTabela.querySelectorAll("tr")];
+      const dados = linhas.map(tr => {
+        const celulas = [...tr.querySelectorAll("td")];
+        return celulas.map(td => td.innerText.trim());
+      });
+      localStorage.setItem("tabelaDados", JSON.stringify(dados));
+    }
+
+    // Adicionar nova linha
+    function adicionarLinha() {
+      const tr = document.createElement("tr");
+
+      for (let i = 0; i < 3; i++) {
+        const td = document.createElement("td");
+        td.contentEditable = "true";
+        td.addEventListener("input", salvarTabela);
+        tr.appendChild(td);
+      }
+
+      corpoTabela.appendChild(tr);
+      salvarTabela();
+    }
+
+    // Inicializar
+    carregarTabela();
+  </script>
 
 </body>
 </html>
