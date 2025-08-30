@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Estoque de Cards - Veloe</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+    td[contenteditable="true"] { background-color: #f9f9f9; }
+    th { background-color: #eee; }
+    .top-info { font-weight: bold; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Estoque de Cards - SGT</h1>
+  <p class="top-info">Cliente: VELOE<br>Data: <span id="dataAtual"></span></p>
+
+  <table id="tabela">
+    <thead>
+      <tr>
+        <th>OSA</th>
+        <th>Cliente / Descrição</th>
+        <th>NF / Data</th>
+        <th>Entrada</th>
+        <th>Saída</th>
+        <th>Saldo no Físico</th>
+        <th>Perda</th>
+      </tr>
+    </thead>
+    <tbody id="corpoTabela"></tbody>
+  </table>
+
+  <button onclick="adicionarLinha()">Adicionar Linha</button>
+  <button onclick="resetarTabela()">Limpar Dados</button>
+
+  <script>
+    const corpoTabela = document.getElementById("corpoTabela");
+
+    const dadosIniciais = [
+      ["VELOE", "VELOE/ VELOE", "", "", "", "37.600", ""],
+      ["VELOE", "BV COMPLETÃO", "", "80.000", "77.100", "80.000", "2.900"],
+      ["VELOE", "BB AMARELO", "", "", "", "3.200", ""],
+      ["VELOE", "BRADESCO COBRANDED", "", "", "", "-", ""],
+      ["VELOE", "BRADESCO PRIME", "", "", "", "3.200", ""],
+      ["VELOE", "BANRISUL", "", "", "", "19.200", ""],
+      ["VELOE", "ELO", "", "", "", "-", ""],
+      ["VELOE", "BANCO DO BRASIL ESTILO", "", "", "", "-", ""],
+      ["VELOE", "BANCO DO BRASIL PRIVATE", "", "", "", "-", ""]
+    ];
+
+    function carregarTabela() {
+      const dadosSalvos = localStorage.getItem("tabelaEstoqueVeloe");
+      const dados = dadosSalvos ? JSON.parse(dadosSalvos) : dadosIniciais;
+
+      corpoTabela.innerHTML = "";
+
+      dados.forEach(linha => {
+        const tr = document.createElement("tr");
+        linha.forEach(celula => {
+          const td = document.createElement("td");
+          td.contentEditable = "true";
+          td.innerText = celula;
+          td.addEventListener("input", salvarTabela);
+          tr.appendChild(td);
+        });
+        corpoTabela.appendChild(tr);
+      });
+    }
+
+    function salvarTabela() {
+      const linhas = [...corpoTabela.querySelectorAll("tr")];
+      const dados = linhas.map(tr => {
+        const celulas = [...tr.querySelectorAll("td")];
+        return celulas.map(td => td.innerText.trim());
+      });
+      localStorage.setItem("tabelaEstoqueVeloe", JSON.stringify(dados));
+    }
+
+    function adicionarLinha() {
+      const tr = document.createElement("tr");
+      for (let i = 0; i < 7; i++) {
+        const td = document.createElement("td");
+        td.contentEditable = "true";
+        td.addEventListener("input", salvarTabela);
+        tr.appendChild(td);
+      }
+      corpoTabela.appendChild(tr);
+      salvarTabela();
+    }
+
+    function resetarTabela() {
+      localStorage.removeItem("tabelaEstoqueVeloe");
+      carregarTabela();
+    }
+
+    // Atualiza data atual formatada
+    document.getElementById("dataAtual").innerText = new Date().toLocaleDateString('pt-BR', {
+      weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
+    });
+
+    carregarTabela();
+  </script>
+</body>
+</html>
