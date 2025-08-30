@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Estoque de Cards - Taggy Greenpass</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+    td[contenteditable="true"] { background-color: #f9f9f9; }
+    th { background-color: #eee; }
+    .top-info { font-weight: bold; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Estoque de Cards - SGT</h1>
+  <p class="top-info">Cliente: Taggy Greenpass<br>Data: <span id="dataAtual"></span></p>
+
+  <table id="tabela">
+    <thead>
+      <tr>
+        <th>OSA</th>
+        <th>Cliente / Descrição</th>
+        <th>NF / Data</th>
+        <th>Entrada</th>
+        <th>Saída</th>
+        <th>Saldo no Físico</th>
+        <th>Perda</th>
+      </tr>
+    </thead>
+    <tbody id="corpoTabela"></tbody>
+  </table>
+
+  <button onclick="adicionarLinha()">Adicionar Linha</button>
+  <button onclick="resetarTabela()">Limpar Dados</button>
+
+  <script>
+    const corpoTabela = document.getElementById("corpoTabela");
+
+    const dadosIniciais = [
+      ["TAGGY GREENPASS", "EDENRED VERMELHO", "", "", "", "20.000", ""],
+      ["TAGGY GREENPASS", "EDENRED AZUL", "", "", "", "8.400", ""],
+      ["TAGGY GREENPASS", "EDENRED DUAL TAG", "", "", "", "7.000", ""],
+      ["TAGGY GREENPASS", "SICOOB", "", "", "", "1.600", ""],
+      ["TAGGY GREENPASS", "CRESOL", "", "", "", "4.720", ""],
+      ["TAGGY GREENPASS", "BANCO INTER", "", "", "", "-", "CONTAR"],
+      ["TAGGY GREENPASS", "AUTOBEM", "", "", "", "3.000", ""]
+    ];
+
+    function carregarTabela() {
+      const dadosSalvos = localStorage.getItem("tabelaEstoqueTaggy");
+      const dados = dadosSalvos ? JSON.parse(dadosSalvos) : dadosIniciais;
+
+      corpoTabela.innerHTML = "";
+
+      dados.forEach(linha => {
+        const tr = document.createElement("tr");
+        linha.forEach(celula => {
+          const td = document.createElement("td");
+          td.contentEditable = "true";
+          td.innerText = celula;
+          td.addEventListener("input", salvarTabela);
+          tr.appendChild(td);
+        });
+        corpoTabela.appendChild(tr);
+      });
+    }
+
+    function salvarTabela() {
+      const linhas = [...corpoTabela.querySelectorAll("tr")];
+      const dados = linhas.map(tr => {
+        const celulas = [...tr.querySelectorAll("td")];
+        return celulas.map(td => td.innerText.trim());
+      });
+      localStorage.setItem("tabelaEstoqueTaggy", JSON.stringify(dados));
+    }
+
+    function adicionarLinha() {
+      const tr = document.createElement("tr");
+      for (let i = 0; i < 7; i++) {
+        const td = document.createElement("td");
+        td.contentEditable = "true";
+        td.addEventListener("input", salvarTabela);
+        tr.appendChild(td);
+      }
+      corpoTabela.appendChild(tr);
+      salvarTabela();
+    }
+
+    function resetarTabela() {
+      localStorage.removeItem("tabelaEstoqueTaggy");
+      carregarTabela();
+    }
+
+    // Atualiza data atual formatada
+    document.getElementById("dataAtual").innerText = new Date().toLocaleDateString('pt-BR', {
+      weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
+    });
+
+    carregarTabela();
+  </script>
+</body>
+</html>
