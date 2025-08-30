@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Tabela Editável</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    td[contenteditable="true"] {
+      background-color: #f9f9f9;
+    }
+    th {
+      background-color: #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tabela de Dados Editável</h1>
+  
+  <table id="tabela">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Idade</th>
+        <th>Cidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td contenteditable="true">João</td>
+        <td contenteditable="true">28</td>
+        <td contenteditable="true">São Paulo</td>
+      </tr>
+      <tr>
+        <td contenteditable="true">Maria</td>
+        <td contenteditable="true">34</td>
+        <td contenteditable="true">Belo Horizonte</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><em>* Clique em uma célula para editar.</em></p>
+
+</body>
+</html>
